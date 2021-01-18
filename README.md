@@ -41,8 +41,9 @@ Types and functions are annotated.
 * Assumes that there is only one text section
 * Assumes that architecture is little-endian
 * Assumes that binary is built with later Go versions (currently 1.15), moduledata struct is not the same for binaries built with earlier versions
-* Only Windows and Linux (both x86/x64) supported (same architectures and OSes supported by IDA Freeware)
+* Only tested on Windows and Linux (both x86/x64) generated from a single Go source file ...
 * Code is not very Pythonic.:sweat_smile:
+
 
 ## Project Organization
 
