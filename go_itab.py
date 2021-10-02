@@ -10,7 +10,7 @@ class Parser:
         mdp = self.md_parser
         mdp.f.seek(mdp.moduledata_raw, 0)
 
-        ITABLINKS_OFFSET = 33 * mdp.ptr_size
+        ITABLINKS_OFFSET = 43 * mdp.ptr_size
         ITABLINKS_SIZE = 3 * mdp.ptr_size
 
         mdp.f.seek(ITABLINKS_OFFSET, 1)

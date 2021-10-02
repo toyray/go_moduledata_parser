@@ -10,7 +10,7 @@ class Parser:
         mdp = self.md_parser
         mdp.f.seek(mdp.moduledata_raw, 0)
 
-        TYPELINKS_OFFSET = 30 * mdp.ptr_size
+        TYPELINKS_OFFSET = 40 * mdp.ptr_size
         TYPELINKS_SIZE = 3 * mdp.ptr_size
 
         mdp.f.seek(TYPELINKS_OFFSET, 1)

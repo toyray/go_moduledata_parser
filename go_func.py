@@ -9,7 +9,7 @@ class Parser:
         mdp = self.md_parser
         mdp.f.seek(mdp.moduledata_raw, 0)
 
-        FTABS_OFFSET = 3 * mdp.ptr_size
+        FTABS_OFFSET = 16 * mdp.ptr_size
         FTABS_SIZE = 3 * mdp.ptr_size
 
         mdp.f.seek(FTABS_OFFSET, 1)
@@ -26,7 +26,7 @@ class Parser:
             mdp.f.seek(ftabs_raw + (i * FTAB_SIZE), 0)
             ftab = mdp.f.read(FTAB_SIZE)
             func_addr, _func_offset = unpack("<" + 2 * mdp.ptr_type, ftab)
-            _func_raw =  mdp.pclntab_off( _func_offset)
+            _func_raw =  ftabs_raw + _func_offset
             func = self._parse_func(_func_raw)
             funcs[hex(func_addr)] = func
         return funcs
@@ -34,19 +34,20 @@ class Parser:
     def _parse_func(self, _func_raw):
         # https://golang.org/src/runtime/runtime2.go
         # type _func struct {
-	#     entry   uintptr // start pc
-	#     nameoff int32   // function name
+        #     entry   uintptr // start pc
+        #     nameoff int32   // function name
         #
-	#     args        int32  // in/out args size
-	#     deferreturn uint32 // offset of start of a deferreturn call instruction from entry, if any.
+        #     args        int32  // in/out args size
+        #     deferreturn uint32 // offset of start of a deferreturn call instruction from entry, if any.
         #
-	#     pcsp      int32
-	#     pcfile    int32
-	#     pcln      int32
-	#     npcdata   int32
-	#     funcID    funcID  // set for certain special runtime functions
-	#     _         [2]int8 // unused
-	#     nfuncdata uint8   // must be last
+        #     pcsp      int32
+        #     pcfile    int32
+        #     pcln      int32
+        #     npcdata   int32
+        #     funcID    funcID   // set for certain special runtime functions
+        #     flag      funcFlag // is uint8, haven't figured what it does
+        #     _         [1]int8  // unused
+        #     nfuncdata uint8    // must be last
         # }
 
         mdp = self.md_parser
@@ -57,7 +58,7 @@ class Parser:
         FUNC_SIZE = mdp.ptr_size + 4
         _func = mdp.f.read(mdp.ptr_size + 4)
         _func_va, _func_name_offset = unpack("<" + mdp.ptr_type + "L", _func)
-        _func_name_raw =  mdp.pclntab_off(_func_name_offset)
+        _func_name_raw =  mdp.funcname_off(_func_name_offset)
 
         mdp.f.seek(_func_name_raw)
 

@@ -52,8 +52,8 @@ class Parser:
     def va2raw(self, va):
         return self.binary.va2raw(va)
 
-    def pclntab_off(self, offset):
-        return self.pclntab_raw + offset
+    def funcname_off(self, offset):
+        return self.funcname_raw + offset
 
     def types_off(self, offset):
         return self.types_raw + offset
@@ -118,8 +118,8 @@ class Parser:
 
         offsets = self._find_offsets_from_pclntab(self.pclntab_raw)
         # Get funcnametab VA which will help us find moduledata more accurately
-        funcname_raw = self.pclntab_raw + offsets["funcname_offset"]
-        funcname_va = self.raw2va(funcname_raw)
+        self.funcname_raw = self.pclntab_raw + offsets["funcname_offset"]
+        funcname_va = self.raw2va(self.funcname_raw)
 
         # Look for moduledata struct in binary
         self.moduledata_raw = self._find_moduledata_raw(pclntab_va, funcname_va)
