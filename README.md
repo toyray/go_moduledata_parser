@@ -6,6 +6,9 @@ as JSON. Since the parser output is JSON, this allows integration with different
 Currently, only generation of an IDC for annotating an IDA dissassembly is supported. This IDC
 can be applied to the disassembly to rename functions and types.
 
+This branch should work from Go 1.08+ (only tested on Go 1.15). For Go 1.16,
+use the go116 branch.
+
 ## Example Usage
 
 ```bash
