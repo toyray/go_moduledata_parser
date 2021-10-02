@@ -118,9 +118,11 @@ class Parser:
 
         offsets = self._find_offsets_from_pclntab(self.pclntab_raw)
         # Get funcnametab VA which will help us find moduledata more accurately
+        funcname_raw = self.pclntab_raw + offsets["funcname_offset"]
+        funcname_va = self.raw2va(funcname_raw)
 
         # Look for moduledata struct in binary
-        self.moduledata_raw = self._find_moduledata_raw(pclntab_va)
+        self.moduledata_raw = self._find_moduledata_raw(pclntab_va, funcname_va)
         if self.moduledata_raw is None:
             sys.stderr.write("Error: moduledata not found\n")
             return False
@@ -177,7 +179,7 @@ class Parser:
 
     # Assumes little-endianness when searching for reference to VA of
     # pclntab
-    def _find_moduledata_raw(self, pclntab_va):
+    def _find_moduledata_raw(self, pclntab_va, funcname_va):
         self.f.seek(0, os.SEEK_END)
         file_end = self.f.tell()
 
@@ -190,12 +192,11 @@ class Parser:
 
             value = unpack("<" + self.ptr_type, data)[0]
             if value == pclntab_va:
-                data = self.f.read(2 * self.ptr_size)
-                # next two values indicate the len and cap of the pclntab[] and
-                # should be the same
-                plt_len, plt_cap = unpack("<" + 2 * self.ptr_type , data)
-                if plt_len != plt_cap:
-                    self.f.seek(-2 * self.ptr_size, 1)
+                data = self.f.read(self.ptr_size)
+                # next value should be the offset of funcname var
+                ptr = unpack("<" + self.ptr_type , data)[0]
+                if ptr != funcname_va:
+                    self.f.seek(-1 * self.ptr_size, 1)
                     continue
                 return i
 
