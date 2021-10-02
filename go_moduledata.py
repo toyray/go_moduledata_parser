@@ -204,7 +204,7 @@ class Parser:
 
     def _get_types_va(self):
         self.f.seek(self.moduledata_raw, 0)
-        TYPES_OFFSET = 25 * self.ptr_size
+        TYPES_OFFSET = 35 * self.ptr_size
         TYPES_SIZE = self.ptr_size
 
         self.f.seek(TYPES_OFFSET, 1)
@@ -214,7 +214,7 @@ class Parser:
 
     def _get_text_va(self):
         self.f.seek(self.moduledata_raw, 0)
-        TEXT_OFFSET = 12 * self.ptr_size
+        TEXT_OFFSET = 22 * self.ptr_size
         TEXT_SIZE = self.ptr_size
 
         self.f.seek(TEXT_OFFSET, 1)
