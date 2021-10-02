@@ -27,6 +27,11 @@ class Parser:
                         "method_va": hex(ut_va + ut["method_offset"])
                 }
 
+                # HACK: It seems possible to have > 100 methods (mcount) for
+                # these uncommon types. Skip the method extraction for them
+                if t["kind"] in (Kind.Func, Kind.Map):
+                    continue
+
                 METHOD_SIZE = 16
                 for i in range(0, ut["method_count"], 1):
                     method_va = ut_va + ut["method_offset"] + i * METHOD_SIZE
