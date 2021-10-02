@@ -113,9 +113,13 @@ class Parser:
         else:
             self.ptr_type = "L"
 
-        # Look for moduledata struct in binary
         self.pclntab_raw = pclntab["raw"]
         pclntab_va = self.raw2va(self.pclntab_raw)
+
+        offsets = self._find_offsets_from_pclntab(self.pclntab_raw)
+        # Get funcnametab VA which will help us find moduledata more accurately
+
+        # Look for moduledata struct in binary
         self.moduledata_raw = self._find_moduledata_raw(pclntab_va)
         if self.moduledata_raw is None:
             sys.stderr.write("Error: moduledata not found\n")
@@ -180,7 +184,6 @@ class Parser:
         remainder = file_end % self.ptr_size
         self.f.seek(0)
 
-        print(hex(pclntab_va))
         # Shortcut since Go binaries seem to be aligned on disk anyways
         for i in range(0, file_end - remainder, self.ptr_size):
             data = self.f.read(self.ptr_size)
@@ -225,3 +228,33 @@ class Parser:
                     "name": typ["name"],
                     "kind": typ["kind"].name
             }
+
+    def _find_offsets_from_pclntab(self, pclntab_raw):
+        # // pcHeader holds data used by the pclntab lookups.
+        # type pcHeader struct {
+            # magic          uint32  // 0xFFFFFFFA
+            # pad1, pad2     uint8   // 0,0
+            # minLC          uint8   // min instruction size
+            # ptrSize        uint8   // size of a ptr in bytes
+            # nfunc          int     // number of functions in the module
+            # nfiles         uint    // number of entries in the file tab.
+            # funcnameOffset uintptr // offset to the funcnametab variable from pcHeader
+            # cuOffset       uintptr // offset to the cutab variable from pcHeader
+            # filetabOffset  uintptr // offset to the filetab variable from pcHeader
+            # pctabOffset    uintptr // offset to the pctab varible from pcHeader
+            # pclnOffset     uintptr // offset to the pclntab variable from pcHeader
+        # }
+
+        self.f.seek(pclntab_raw + (4 + 4 + 2 * self.ptr_size))
+        data = self.f.read(5 * self.ptr_size)
+        funcname_offset, cu_offset, filetab_offset, pctab_offset, pcln_offset = \
+            unpack("<" + 5 * self.ptr_type , data)
+
+        offsets = {
+            "funcname_offset": funcname_offset,
+            "cu_offset": cu_offset,
+            "filetab_offset" : filetab_offset,
+            "pctab_offset" : pctab_offset,
+            "pcln_offset" : pcln_offset
+        }
+        return offsets
