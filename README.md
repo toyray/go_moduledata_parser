@@ -1,4 +1,4 @@
-# go_moduledata_parser
+# go_moduledata_parser (for Go 1.16)
 
 Personal project to parse and extract function and type metadata from Go binaries
 as JSON. Since the parser output is JSON, this allows integration with different tools.
@@ -40,8 +40,8 @@ Types and functions are annotated.
 * Assumes that only one moduledata struct in use, Go binaries can contain more than one
 * Assumes that there is only one text section
 * Assumes that architecture is little-endian
-* Assumes that binary is built with later Go versions (currently 1.15), moduledata struct is not the same for binaries built with earlier versions
-* Only tested on Windows and Linux (both x86/x64) generated from a single Go source file ...
+* Assumes that binary is built with Go version 1.16, moduledata struct is not the same for binaries built with earlier versions. Will likely break for 1.18+ as well.
+* Currently only tested on Linux x64) generated from a single Go source file ... Earlier branches work for Windows and Linux (x86 and x64), YMMV!
 * Code is not very Pythonic.:sweat_smile:
 
 
@@ -56,7 +56,7 @@ within a Golang binary. Start from `parser.py`
 
 * [custom.go](go_files/custom.go) contains the sample Go code to test the parsing
 and annotation
-* [build.sh](go_files/build.sh) builds the Go code into stripped, unstripped versions for x86/x64 Windows and Linux
+* [build.sh](go_files/build.sh) builds the Go code into stripped, unstripped versions for x86/x64 Windows and Linux.
 * Prebuilt binaries. Stripped binaries are suffixed with **s**.
 
 ### integrations
@@ -69,8 +69,6 @@ Currently only IDA is supported.
 * [generate_go_idc_types.py](integrations/ida/generate_go_idc_types.py) generates a IDC script from JSON for types only (useful for unstripped binaries so that you don't rename what IDA already generated for you)
 * [go_32.h](integrations/ida/go_32.h) contains the 32 bit version of the Golang structs
 * [go_64.h](integrations/ida/go_64.h) contains the 64 bit version of the Golang structs
-* [go_structs.h](integrations/ida/go_64.h) contains the bitness-independent
-  structs for selected Golang types. Primitive data types are defined in `go_32.h` and `go_64.h`
 * [sample](integrations/ida/sample) folder contains the generated JSON and IDC for a stripped Windows x64 binary
 
 ## Background
