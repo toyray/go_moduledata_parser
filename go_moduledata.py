@@ -154,7 +154,7 @@ class Parser:
 
             le_header = unpack("<L", data)[0]
 
-            PCLNTAB_HEADER = 0xFFFFFFFB
+            PCLNTAB_HEADER = 0xFFFFFFFA
             if le_header == PCLNTAB_HEADER:
                 data = self.f.read(4)
                 empty, pc_quantum, ptr_size = unpack("<HBB", data)
