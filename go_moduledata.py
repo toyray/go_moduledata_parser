@@ -180,6 +180,7 @@ class Parser:
         remainder = file_end % self.ptr_size
         self.f.seek(0)
 
+        print(hex(pclntab_va))
         # Shortcut since Go binaries seem to be aligned on disk anyways
         for i in range(0, file_end - remainder, self.ptr_size):
             data = self.f.read(self.ptr_size)
